@@ -1,0 +1,176 @@
+#1
+const int trigPin = 14;
+const int echoPin = 15;
+const byte numeral[10][8] = {
+    {1,1,1,1,1,1,0,0}, // 0
+    {0,1,1,0,0,0,0,0}, // 1
+    {1,1,0,1,1,0,1,0}, // 2
+    {1,1,1,1,0,0,1,0}, // 3
+    {0,1,1,0,0,1,1,0}, // 4
+    {1,0,1,1,0,1,1,0}, // 5
+    {0,0,1,1,1,1,1,0}, // 6
+    {1,1,1,0,0,0,0,0}, // 7
+    {1,1,1,1,1,1,1,0}, // 8
+    {1,1,1,0,0,1,1,0}  // 9
+}; //A,B,C,D,E,F,G,dp
+const int segmentPins[8] = {9,2,3,5,6,8,7,4}; 
+// A-11,B-7,C-4,D-2,E-1,F-10,G-5,dp-3
+const int digitPins[4] = {13,12,11,10}; 
+// DIG4-6,DIG3-8,DIG2-9,DIG1-12
+unsigned long count = 0;
+
+
+void setup() {
+  Serial.begin (9600);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  for(int i=0; i < 8; i++)
+    pinMode(segmentPins[i], OUTPUT);
+  for(int i=0; i < 4; i++)
+    pinMode(digitPins[i], OUTPUT);
+
+}
+
+int duration;
+int distanceCm;
+
+void loop() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distanceCm= duration*0.034/2;
+
+  Serial.println(distanceCm);
+
+  if(millis()/1000 > count) count++;
+  showNumber(distanceCm);
+}
+
+void showNumber(int num){
+  for(int i = 0; i < 4; i++){
+    showDigit(num % 10, i);
+    num = num / 10;
+  }
+}
+void showDigit(int digit, int pos){
+  if( digit >= 0 && digit <= 9){
+    for(int segment = 0; segment < 8; segment++)
+      digitalWrite(segmentPins[segment], numeral[digit][segment]);
+    digitalWrite(digitPins[pos],LOW);
+    delayMicroseconds(300);
+    digitalWrite(digitPins[pos],HIGH);
+  }
+}
+
+#2
+int button=13; 
+byte B[] = {
+B0111000,
+B01001000,
+B01011000,
+B01100000,
+B01011000,
+B01001000,
+B01011000,
+B01110000};
+byte E[] = {
+B01111111,
+B01000000,
+B01000000,
+B01111111,
+B01000000,
+B01000000,
+B01000000,
+B01111111};
+byte K[] = {
+B01000100,
+B01001000,
+B01010000,
+B01100000,
+B01100000,
+B01010000,
+B01001000,
+B01000100};
+byte Z[] = {
+B01111111,
+B00000011,
+B00000110,
+B00001100,
+B00011000,
+B00110000,
+B01100000,
+B01111111};
+byte H[] = {
+B01000001,
+B01000001,
+B01000001,
+B01000001,
+B01111111,
+B01000001,
+B01000001,
+B01000001};
+byte A[] = {
+B00001000,
+B00010100,
+B00100010,
+B01000001,
+B01111111,
+B01000001,
+B01000001,
+B01000001};
+byte N[] = {
+B01000001,
+B01100001,
+B01010001,
+B01001001,
+B01001001,
+B01000101,
+B01000101,
+B01000011};
+
+const int columnPins[] = { 2, 3, 4, 5, 6, 7, 8, 9};
+const int rowPins[] = { 10,11,12,15,16,17,18,19};
+void setup() {
+  for (int i = 0; i < 8; i++){
+    pinMode(rowPins[i], OUTPUT); // make all the LED pins outputs
+    pinMode(columnPins[i], OUTPUT);
+    digitalWrite(columnPins[i], HIGH); // disconnect column pins
+  }
+  pinMode(button, INPUT);
+}
+void loop() {
+  show(B, 800);
+  while(digitalRead(button)==HIGH){}
+  show(E, 800);
+  while(digitalRead(button)==LOW){}
+  show(K, 800);
+  while(digitalRead(button)==LOW){}
+  show(Z, 800);
+  while(digitalRead(button)==LOW){}
+  show(H, 800);
+  while(digitalRead(button)==LOW){}
+  show(A, 800);
+  while(digitalRead(button)==LOW){}
+  show(N, 800);
+  while(digitalRead(button)==LOW){}
+  delay(400); // show nothing between beats
+}
+void show( byte * image, unsigned long duration){
+  unsigned long start = millis(); // begin timing the animation
+  while (start + duration > millis()){ // loop until duration passed
+    for(int row = 0; row < 8; row++){
+      digitalWrite(rowPins[row], HIGH); // connect row to +5 volts
+      for(int column = 0; column < 8; column++){
+        boolean pixel = bitRead(image[row],column);
+        if(pixel == 1) digitalWrite(columnPins[column], LOW);
+        delayMicroseconds(300); // a small delay for each LED
+        digitalWrite(columnPins[column], HIGH); 
+      }
+      digitalWrite(rowPins[row], LOW); // disconnect LEDs
+    }
+  }
+}

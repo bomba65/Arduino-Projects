@@ -1,0 +1,330 @@
+Find IR remote controller codes for your device and print them to Serial port together with button names
+Control servomotor position using Vol+, Vol- buttons
+Print your Name on LCD display
+FM tuner simulation: CH+, CH- adjust the FM frecency (min:87.0, max:108.0); VOL+, VOL- adjust volume of station; CH turns on or off the station; the state messages must be printed to LCD display
+
+#1
+#include "IRremote.h"
+int receiver = 2;
+IRrecv irrecv(receiver); 
+decode_results results;
+void setup() {
+  Serial.begin(9600);
+  irrecv.enableIRIn();
+}
+void loop() {
+  
+  if ( irrecv.decode( &results )) { 
+    
+    
+if (results.value==0xFFA25D){
+  Serial.println("ch-");
+}
+if (results.value==0xFF629D){
+  Serial.println("ch");
+}
+if (results.value==0xFFE21D){
+  Serial.println("ch+");
+}
+if (results.value==0xFF22DD){
+  Serial.println("<<");
+}
+if (results.value==0xFF02FD){
+  Serial.println(">>");
+}
+if (results.value==0xFFC23D){
+  Serial.println(">||");
+}
+if (results.value==0xFFFA857){
+  Serial.println("VOL+");
+  
+}
+if (results.value==0xFFE01F){
+  Serial.println("VOL-");
+}
+if (results.value==0xFF906F){
+  Serial.println("EQ");
+  }
+if (results.value==0xFF6897){
+  Serial.println("0");
+}
+if (results.value==0xFF9867){
+  Serial.println("100+");
+}
+if (results.value==0xFFB04F){
+  Serial.println("200+");
+}
+if (results.value==0xFF30CF){
+  Serial.println("1");
+}
+if (results.value==0xFF18E7){
+  Serial.println("2");
+}
+if (results.value==0xFF7A85){
+  Serial.println("3");
+}
+if (results.value==0xFF10EF){
+  Serial.println("4");
+}
+if (results.value==0xFF38C7){
+  Serial.println("5");
+}
+if (results.value==0xFF5AA5){
+  Serial.println("6");
+}
+if (results.value==0xFF42BD){
+  Serial.println("7");
+}
+if (results.value==0xFF4AB5){
+  Serial.println("8");
+}
+if (results.value==0xFF52AD){
+  Serial.println("9");
+}
+
+
+ irrecv.resume();   
+  }
+  
+}
+
+
+#2
+#include "IRremote.h" 
+#include <Servo.h>
+int receiver = 2;
+IRrecv irrecv(receiver); 
+decode_results results;
+
+Servo myservo; 
+
+void setup() {
+  Serial.begin(9600);
+  irrecv.enableIRIn();
+
+  myservo.attach(3);
+  myservo.write(0);
+}
+
+int angle = 0; 
+void loop() {
+  
+  if ( irrecv.decode( &results )) { 
+    
+    Serial.println(results.value, HEX);
+
+if (results.value==0xFFA25D){
+  Serial.println("ch-");
+}
+if (results.value==0xFF629D){
+  Serial.println("ch");
+}
+if (results.value==0xFFE21D){
+  Serial.println("ch+");
+}
+if (results.value==0xFF22DD){
+  Serial.println("<<");
+}
+if (results.value==0xFF02FD){
+  Serial.println(">>");
+}
+if (results.value==0xFFC23D){
+  Serial.println(">||");
+}
+if (results.value==0xFFA857){
+  Serial.println("VOL+");
+
+  angle -=60; 
+  myservo.write(angle);
+  
+}
+if (results.value==0xFFE01F){
+  Serial.println("VOL-");
+  angle +=60; 
+  myservo.write(angle);
+}
+if (results.value==0xFF906F){
+  Serial.println("EQ");
+  }
+if (results.value==0xFF6897){
+  Serial.println("0");
+}
+if (results.value==0xFF9867){
+  Serial.println("100+");
+}
+if (results.value==0xFFB04F){
+  Serial.println("200+");
+}
+if (results.value==0xFF30CF){
+  Serial.println("1");
+}
+if (results.value==0xFF18E7){
+  Serial.println("2");
+}
+if (results.value==0xFF7A85){
+  Serial.println("3");
+}
+if (results.value==0xFF10EF){
+  Serial.println("4");
+}
+if (results.value==0xFF38C7){
+  Serial.println("5");
+}
+if (results.value==0xFF5AA5){
+  Serial.println("6");
+}
+if (results.value==0xFF42BD){
+  Serial.println("7");
+}
+if (results.value==0xFF4AB5){
+  Serial.println("8");
+}
+if (results.value==0xFF52AD){
+  Serial.println("9");
+}
+
+
+ irrecv.resume();   
+  }
+  
+}
+
+#3
+IN Lecture
+
+#4
+#include "IRremote.h"
+#include <LiquidCrystal.h> // include the library code
+//constants for the number of rows and columns in the LCD
+const int numRows = 2;
+const int numCols = 16;
+
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2); //RS, E, D4, D5, D6, D7
+
+int receiver = 8;
+IRrecv irrecv(receiver); 
+decode_results results;
+
+float channel = 87;
+int volume = 0;
+bool off=true;
+void setup() {
+  Serial.begin(9600);
+  irrecv.enableIRIn();
+
+  lcd.begin(numCols, numRows);
+  lcd.setCursor(0, 0);
+  lcd.print("Channel: " + (String)channel);
+  lcd.setCursor(0, 1);
+  lcd.print("Volume: " + (String)volume);
+}
+void loop() {  
+  if ( irrecv.decode( &results )) { 
+    
+    
+if (results.value==0xFFA25D){
+  Serial.println("ch-");
+  if(off == true){
+    channel -= 0.1;
+    if(channel < 87) channel = 87;
+    lcd.setCursor(0, 0);
+    lcd.print("Channel: " + (String)channel);
+  }
+}
+if (results.value==0xFF629D){
+  Serial.println("ch");
+  lcd.setCursor(0, 0);
+  off = !off;
+  if(off == false){
+    lcd.clear();
+    lcd.print("Radio if OFF");
+  }
+  else{
+    lcd.setCursor(0, 0);
+    lcd.print("Channel: " + (String)channel);
+    lcd.setCursor(0, 1);
+    lcd.print("Volume: " + (String)volume);
+  }
+}
+if (results.value==0xFFE21D){
+  Serial.println("ch+");
+
+  if(off == true){
+    channel += 0.1;
+    if(channel > 108) channel = 108;
+    lcd.setCursor(0, 0);
+    lcd.print("Channel: " + (String)channel);
+  }
+}
+if (results.value==0xFF22DD){
+  Serial.println("<<");
+}
+if (results.value==0xFF02FD){
+  Serial.println(">>");
+}
+if (results.value==0xFFC23D){
+  Serial.println(">||");
+}
+if (results.value==0xFFA857){
+  Serial.println("VOL+");
+  if(off == true){
+    volume += 1;
+    if(volume > 100) volume = 100;
+    lcd.setCursor(0, 1);
+    lcd.print("Volume: " + (String)volume);
+  }
+}
+if (results.value==0xFFE01F){
+  Serial.println("VOL-");
+  if(off == true){
+    volume -= 1;
+    if(volume < 0) volume = 0;
+    lcd.setCursor(0, 1);
+    lcd.print("Volume: " + (String)volume);
+  }
+}
+if (results.value==0xFF906F){
+  Serial.println("EQ");
+  }
+if (results.value==0xFF6897){
+  Serial.println("0");
+}
+if (results.value==0xFF9867){
+  Serial.println("100+");
+}
+if (results.value==0xFFB04F){
+  Serial.println("200+");
+}
+if (results.value==0xFF30CF){
+  Serial.println("1");
+}
+if (results.value==0xFF18E7){
+  Serial.println("2");
+}
+if (results.value==0xFF7A85){
+  Serial.println("3");
+}
+if (results.value==0xFF10EF){
+  Serial.println("4");
+}
+if (results.value==0xFF38C7){
+  Serial.println("5");
+}
+if (results.value==0xFF5AA5){
+  Serial.println("6");
+}
+if (results.value==0xFF42BD){
+  Serial.println("7");
+}
+if (results.value==0xFF4AB5){
+  Serial.println("8");
+}
+if (results.value==0xFF52AD){
+  Serial.println("9");
+}
+
+
+ irrecv.resume();   
+  }
+  
+}

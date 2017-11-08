@@ -1,0 +1,92 @@
+#include <Servo.h>
+
+int angle_ldr = A1;
+int speed_ldr = A2;
+const int motorPin = 6; 
+#define pot A0
+Servo myservo; 
+const int stepperPins[4] = {2, 3, 4, 5};
+
+
+void setup() {
+  Serial.begin (9600);
+  pinMode(motorPin, OUTPUT);
+  for(int i=0; i<4; i++) pinMode(stepperPins[i], OUTPUT);
+
+  myservo.attach(7);
+  myservo.write(0);
+}
+
+int dirct;
+int speedStpr;
+int angleServo;
+int speedDC;
+
+void loop() {   
+
+  angleServo = analogRead(angle_ldr)/6;
+  speedDC = analogRead(speed_ldr);
+
+  if(analogRead(pot) > 500 && analogRead(pot) < 550){
+    dirct = 2;
+  }
+  else if(analogRead(pot) < 501){
+    dirct = 0;
+    speedStpr = analogRead(pot)/50;
+  }
+  else{
+    dirct = 1;
+    speedStpr = (1023-analogRead(pot))/50;
+  }
+
+  myservo.write(angleServo);
+
+  if(dirct == 2){}
+  else if(dirct == 0){
+    digitalWrite(stepperPins[0], LOW);
+    digitalWrite(stepperPins[1], LOW);
+    digitalWrite(stepperPins[2], LOW);
+    digitalWrite(stepperPins[3], HIGH);
+    delay(speedStpr);
+    digitalWrite(stepperPins[0], LOW);
+    digitalWrite(stepperPins[1], LOW);
+    digitalWrite(stepperPins[2], HIGH);
+    digitalWrite(stepperPins[3], LOW);
+    delay(speedStpr);
+    digitalWrite(stepperPins[0], LOW);
+    digitalWrite(stepperPins[1], HIGH);
+    digitalWrite(stepperPins[2], LOW);
+    digitalWrite(stepperPins[3], LOW);
+    delay(speedStpr);
+    digitalWrite(stepperPins[0], HIGH);
+    digitalWrite(stepperPins[1], LOW);
+    digitalWrite(stepperPins[2], LOW);
+    digitalWrite(stepperPins[3], LOW);
+    delay(speedStpr);
+  }
+  else if(dirct == 1){
+    digitalWrite(stepperPins[0], HIGH);
+    digitalWrite(stepperPins[1], LOW);
+    digitalWrite(stepperPins[2], LOW);
+    digitalWrite(stepperPins[3], LOW);
+    delay(speedStpr);
+    digitalWrite(stepperPins[0], LOW);
+    digitalWrite(stepperPins[1], HIGH);
+    digitalWrite(stepperPins[2], LOW);
+    digitalWrite(stepperPins[3], LOW);
+    delay(speedStpr);
+    digitalWrite(stepperPins[0], LOW);
+    digitalWrite(stepperPins[1], LOW);
+    digitalWrite(stepperPins[2], HIGH);
+    digitalWrite(stepperPins[3], LOW);
+    delay(speedStpr);
+    digitalWrite(stepperPins[0], LOW);
+    digitalWrite(stepperPins[1], LOW);
+    digitalWrite(stepperPins[2], LOW);
+    digitalWrite(stepperPins[3], HIGH);
+    delay(speedStpr);
+  }
+  
+  if(speed_ldr<500) digitalWrite(motorPin, HIGH);
+  else digitalWrite(motorPin, LOW);
+}

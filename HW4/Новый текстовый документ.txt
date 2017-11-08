@@ -1,0 +1,69 @@
+A smart home has a light intensity sensor, vibration sensor, range sensor, temperature sensor and 2 tilt sensors (one for indicating that security alarm is turned on another for indicating that window is opened). The signalization (LED) must be turned on when security alarm is turned on and at least one of the following conditions are true:
+Lights turned on
+Vibrations inside the house occurred
+Someone got too close to the back door
+Temperature inside the house got too hot
+Widow opened
+
+
+int led = 2;
+int ldr = A3;
+const int secTilt = 3;
+const int windTilt = 4;
+const int piezo = A2; 
+const int temp = A1;
+boolean alarm = false;
+const int trigPin = 6;
+const int echoPin = 7 ;
+
+
+void setup() {
+  Serial.begin (9600);
+  pinMode(led, OUTPUT);
+  pinMode (secTilt, INPUT); 
+  digitalWrite (secTilt, HIGH); 
+  pinMode (windTilt, INPUT); 
+  digitalWrite (windTilt, HIGH); 
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+}
+
+int duration;
+int distanceCm;
+
+void loop() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distanceCm= duration*0.034/2;
+
+  if(digitalRead(secTilt)) {
+    digitalWrite(led, HIGH);
+    alarm = true;
+  }
+  else {
+    digitalWrite(led, LOW);
+    alarm = false;
+  }
+
+  if(analogRead(ldr)>800 && alarm == true) blinkLed();
+  if(!digitalRead(windTilt) && alarm == true) blinkLed();
+  if(analogRead(temp)>65 && alarm == true) blinkLed();
+  if(distanceCm<20 && alarm == true) blinkLed();
+}
+
+void blinkLed(){
+  tone(piezo, 1000);
+  delay(100);
+  noTone(piezo);
+  digitalWrite(led, LOW);
+  delay(100);
+}
+  
+
+
+

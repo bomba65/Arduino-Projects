@@ -1,0 +1,133 @@
+Given 2 strings A and B. A contains some text and B contains a number. Print B times A.
+Write function that compares two c type strings
+Write function that returns both minimum and maximum number from an array of integers
+Read N from Serial port and return N’th Fibonacci number
+Read N from Serial port then read N numbers into array, print sorted array
+Read a character from Serial port and print its ASCII value
+Read a String from Serial port then append “-OK” to it and print the resulting string
+
+#1
+void setup() {
+  Serial.begin (9600);
+  String a = "Beka";
+  String b = "4";
+
+  for(int i = 0; i < b.toInt(); i++) Serial.println(a);
+}
+
+void loop() {
+}
+
+#2
+void setup() {
+  Serial.begin (9600);
+  compare("Beka","beka");
+}
+
+void loop() {
+}
+
+void compare(String a, String b){
+  if(a==b) Serial.println("True");
+  else Serial.println("False");
+}
+
+#3
+void setup() {
+  Serial.begin (9600);
+  int arr[] = {12,-2, 8, 6, 1};
+  min_max(arr, sizeof(arr)/sizeof(arr[0]));
+}
+
+void loop() {
+}
+
+void min_max(int arr[], int len){
+  int min = arr[0];
+  int max = arr[0];
+  for(int i = 1; i < len; i++){
+    if(arr[i]<min) min = arr[i];
+    if(arr[i]>max) max = arr[i];
+  }
+  Serial.println(min);
+  Serial.println(max);
+}
+
+#4
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+}
+
+void loop() {
+  Serial.print("Enter int n: ");
+  while(Serial.available()==0){ 
+  }
+  int n = Serial.parseInt();
+
+  Serial.println(fibb(n));
+}
+
+int fibb(int n){
+  if(n==0) return 0;
+  if(n==1) return 1;
+
+  return fibb(n-1)+fibb(n-2);
+}
+
+#5
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+}
+void loop() {
+  Serial.print("Enter length of array: ");
+  while(Serial.available()==0){ 
+  }
+  int n = Serial.parseInt();
+  Serial.println(n);
+  int arr[n] = {};
+  for(int i = 0; i < n; i++){
+    Serial.print("Enter ");
+    Serial.print(i);
+    Serial.print(" element of array: ");
+    while(Serial.available()==0){ 
+    }
+    int num = Serial.parseInt();
+    arr[i]= num;
+    Serial.println(num);
+  }
+
+  for(int i = 0; i < sizeof(arr)/sizeof(arr[0]); i++) {
+    Serial.print(arr[i]);
+    Serial.print(" ");
+  }
+
+}
+
+#6
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+}
+void loop() {
+  Serial.print("Enter something: ");
+  while(Serial.available()==0){ 
+  }
+  int n = Serial.read();
+  Serial.println(n);
+}
+
+#7
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+}
+void loop() {
+  Serial.print("Enter something: ");
+  while(Serial.available()==0){ 
+  }
+  String n = Serial.readString();
+  n += "-OK";
+  Serial.println(n);
+}

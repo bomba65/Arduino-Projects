@@ -1,0 +1,106 @@
+1 LDR and 4 LEDs: LEDs turn on depending on the light intensity (too dark – all LEDs on, to bright – all LEDs are off)
+1 piezo 4 LEDs: each knock increases binary count
+2 tilt sensors and 4 LEDs: if one is tilted - binary count up; another tilted – count down, no tilted – pause, both tilted – increase count speed
+1 ultrasonic and 6 LEDs: show distance in binary
+
+#1
+int leds [] = {13,12,11,10};
+int ldr = 0;
+
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+  for(int i = 0; i < 4; i++){
+    pinMode(leds[i], OUTPUT);
+  }
+
+}
+
+void loop() {
+  int x = analogRead(ldr)/250;
+  turnON(x);
+}
+void turnON(int z){
+  for(int i = 0; i < z; i++) digitalWrite(leds[i], HIGH);
+  for(int i = 0+z; i < 6; i++) digitalWrite(leds[i], LOW);
+}
+  
+#2
+
+int leds [] = {13,12,11,10};
+int ldr = 0;
+const int tilt1 = 2;
+const int tilt2 = 3;
+int count = 0;
+boolean check = true;
+int sp = 500;
+
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+  for(int i = 0; i < 4; i++){
+    pinMode(leds[i], OUTPUT);
+  }
+    pinMode (tilt1, INPUT); 
+    digitalWrite (tilt1, HIGH); 
+    pinMode (tilt2, INPUT); 
+    digitalWrite (tilt2, HIGH); 
+}
+
+void loop() {
+  if (digitalRead(tilt1) && check == true){ 
+    count++;
+    delay(sp);
+    Serial.println(count);
+    if(digitalRead(tilt2)) {
+      sp=250;
+    }else sp = 500;
+
+  }else if(digitalRead(tilt2)){
+    check = false;
+    count--;
+    delay(sp);
+    Serial.println(count);
+    if(digitalRead(tilt1)) {
+      sp=250;
+    }else sp = 500;
+
+  }
+  else{
+    check = true;
+  }
+
+  if(count%2!=0) digitalWrite(leds[0], HIGH); else digitalWrite(leds[0], LOW); 
+  if(count>7) digitalWrite(leds[3], HIGH); else digitalWrite(leds[3], LOW);
+  if(count%4>1) digitalWrite(leds[1], HIGH); else digitalWrite(leds[1], LOW);
+  if(count%8>3) digitalWrite(leds[2], HIGH); else digitalWrite(leds[2], LOW);
+
+}
+  
+#3
+int leds [] = {13,12,11,10};
+const int inPin = A1;
+
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+  for(int i = 0; i < 4; i++){
+    pinMode(leds[i], OUTPUT);
+  }
+}
+
+void loop() {
+  int value = analogRead(inPin);
+  Serial.print(value); Serial.print(" => ");
+  float millivolts = (value / 1024.0) * 5000;
+  float celsius = millivolts / 10; // sensor output is 10mV per degree Celsius
+  if(celsius<26) digitalWrite(leds[1],HIGH); else digitalWrite(leds[1],LOW);
+  if(celsius<28 && celsius>26) digitalWrite(leds[2],HIGH); else digitalWrite(leds[2],LOW);
+  if(celsius>28) digitalWrite(leds[0],HIGH); else digitalWrite(leds[0],LOW);
+
+  Serial.println(celsius);
+}
+  
+
+
+

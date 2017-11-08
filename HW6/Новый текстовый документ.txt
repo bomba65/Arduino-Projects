@@ -1,0 +1,101 @@
+#include "IRremote.h"
+int receiver = 15;
+IRrecv irrecv(receiver); 
+decode_results results;
+int NUM_OF_BUTS = 21;
+long BUTTON_CODES[] = {
+    0xFF6897, //0 button 0
+    0xFF30CF, //1 button 1
+    0xFF18E7, //2 button 2
+    0xFF7A85, //3 button 3
+    0xFF10EF, //4 button 4
+    0xFF38C7, //5 button 5
+    0xFF5AA5, //6 button 6
+    0xFF42BD, //7 button 7
+    0xFF4AB5, //8 button 8
+    0xFF52AD, //9 button 9
+    0xFF9867, //10 button 100+/DOWN
+    0xFFB04F, //11 button 200+/UP
+    0xFFE01F, //12 button VOL-
+    0xFFA857, //13 button VOL+
+    0xFF906F, //14 button EQ/MENU
+    0xFF22DD, //15 button PREV/LEFT
+    0xFF02FD, //16 button NEXT/RIGHT
+    0xFFC23D, //17 button PAUSE/MUTE
+    0xFFA25D, //18 button CH-
+    0xFF629D, //19 button CH+
+    0xFFE21D  //20 button CH/POWER
+};
+
+const byte numeral[10][8] = {
+    {1,1,1,1,1,1,0,0}, // 0
+    {0,1,1,0,0,0,0,0}, // 1
+    {1,1,0,1,1,0,1,0}, // 2
+    {1,1,1,1,0,0,1,0}, // 3
+    {0,1,1,0,0,1,1,0}, // 4
+    {1,0,1,1,0,1,1,0}, // 5
+    {0,0,1,1,1,1,1,0}, // 6
+    {1,1,1,0,0,0,0,0}, // 7
+    {1,1,1,1,1,1,1,0}, // 8
+    {1,1,1,0,0,1,1,0}  // 9
+};
+
+const int segmentPins[8] = {9,2,3,5,6,8,7,4}; 
+const int digitPins[4] = {13,12,11,10}; 
+unsigned long count = 0;
+
+void setup(){
+  Serial.begin(9600);
+  irrecv.enableIRIn();
+  
+  for(int i=0; i < 8; i++)
+    pinMode(segmentPins[i], OUTPUT);
+  for(int i=0; i < 4; i++)
+    pinMode(digitPins[i], OUTPUT);
+}
+
+bool check = false;
+
+void loop(){  
+  if (irrecv.decode(&results)){
+      int button_id = findButton(results.value);
+      if(button_id==17) check=!check;
+      if(!check){
+        if(button_id>-1 && button_id<10){
+          count = (count%1000)*10 + button_id;
+        }
+      }
+      irrecv.resume();
+    }
+
+    if(check){
+      if(millis()%1000<2) {
+        if(count>0)count--;
+        else check = false;
+      }
+    }
+    
+    showNumber(count);
+}
+
+int findButton(long val){
+  for(int i = 0; i < NUM_OF_BUTS; i++){
+    if(val == BUTTON_CODES[i]) return i;
+  }
+  return -1;
+}
+
+void showNumber(int num){
+  for(int i = 0; i < 4; i++){
+    showDigit(num % 10, i);
+    num = num / 10;
+  }
+}
+void showDigit(int digit, int pos){
+  if( digit >= 0 && digit <= 9){
+    for(int segment = 0; segment < 8; segment++) digitalWrite(segmentPins[segment], numeral[digit][segment]);
+    digitalWrite(digitPins[pos],LOW);
+    delayMicroseconds(300);
+    digitalWrite(digitPins[pos],HIGH);
+  }
+}

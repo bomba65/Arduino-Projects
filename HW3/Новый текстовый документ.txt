@@ -1,0 +1,167 @@
+4 LEDs wave, when button is pressed <1s – normal speed, >1s & <3s = double speed, >3s 4x speed
+5 buttons, 4 digit pin code, if sequence of button press is ok then green led turns on, if not then red led turns on
+5 LEDs binary counter controlled with pot
+6 LEDs (1-red, 2-yellow, 3-green) and 1 pot that simulates work of 5V battery, when full energy all LEDs turned on, no energy all turned off, when energy is less than 5% red LED blinks 
+
+#1
+int button1 = 2;
+int leds [] = {10, 11, 12, 13};
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+  for(int i = 0; i < 4; i++){
+    pinMode(leds[i], OUTPUT);
+  }
+  pinMode(button1, INPUT);
+  
+}
+
+void loop() {
+  int time1 = 0;
+  int i = 0;
+  while(digitalRead(button1) == HIGH){
+    if(time1<1000){
+      digitalWrite(leds[i], HIGH);
+      delay(500);
+      digitalWrite(leds[i], LOW);
+      time1 += 500;
+    }
+    else if(time1<3000){
+      digitalWrite(leds[i], HIGH);
+      delay(250);
+      digitalWrite(leds[i], LOW);
+      time1 += 250;
+    }
+    else{
+      digitalWrite(leds[i], HIGH);
+      delay(125);
+      digitalWrite(leds[i], LOW);
+      
+    }
+    i++;
+    i = i%4;
+  }
+}
+#2
+int button1 = 8;
+int button2 = 9;
+int button3 = 10;
+int button4 = 11;
+int button5 = 12;
+int leds [] = {2, 3};
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+  for(int i = 0; i < 2; i++){
+    pinMode(leds[i], OUTPUT);
+  }
+  pinMode(button1, INPUT);
+  pinMode(button2, INPUT);
+  pinMode(button3, INPUT);
+  pinMode(button4, INPUT);
+  pinMode(button5, INPUT);  
+}
+
+String code="";
+void loop() {
+  
+  if(digitalRead(button1) == HIGH) {
+    code +="1";
+    Serial.println(code);
+    while(digitalRead(button1) == HIGH){
+    }
+  }
+  else if(digitalRead(button2) == HIGH) {
+    code +="2";
+    Serial.println(code);
+    while(digitalRead(button2) == HIGH){
+    }
+  }
+  else if(digitalRead(button3) == HIGH) {
+    code +="3";
+    Serial.println(code);
+    while(digitalRead(button3) == HIGH){
+    }
+  }
+  else if(digitalRead(button4) == HIGH) {
+    code +="4";
+    Serial.println(code);
+    while(digitalRead(button4) == HIGH){
+    }
+  }
+  else if(digitalRead(button5) == HIGH) {
+    code +="5";
+    Serial.println(code);
+    while(digitalRead(button5) == HIGH){
+    }
+  }
+
+  if(code=="1554") {
+    digitalWrite(leds[0],HIGH);
+    digitalWrite(leds[1],LOW);
+  }
+  else{
+    digitalWrite(leds[1],HIGH);
+    digitalWrite(leds[0],LOW);
+  }
+	if(code.length()==4) code=""; 
+}
+#3
+int leds [] = {2, 3, 4, 5, 6, 7};
+#define pot A0
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+  for(int i = 0; i < 6; i++){
+    pinMode(leds[i], OUTPUT);
+  }
+}
+
+void loop() {
+  int x;
+  x = analogRead(pot)/33;
+  Serial.println(x);
+  if(x>15)digitalWrite(leds[0],HIGH); else digitalWrite(leds[0],LOW);
+  if(x%2==1)digitalWrite(leds[4],HIGH); else digitalWrite(leds[4],LOW);
+  if(x%4>1)digitalWrite(leds[3],HIGH); else digitalWrite(leds[3],LOW);
+  if(x%8>3)digitalWrite(leds[2],HIGH); else digitalWrite(leds[2],LOW);
+  if(x%16>7)digitalWrite(leds[1],HIGH); else digitalWrite(leds[1],LOW);
+}
+
+#4
+int leds [] = {2, 3, 4, 5, 6, 7};
+#define pot A0
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+  for(int i = 0; i < 6; i++){
+    pinMode(leds[i], OUTPUT);
+  }
+}
+
+void loop() {
+  long x;
+  x = analogRead(pot);
+
+  x = x*100/1023;
+  Serial.println(x);
+  if(x==100) turnON(6);
+  else if(x>80) turnON(5);
+  else if(x>60) turnON(4);
+  else if(x>40) turnON(3);
+  else if(x>20) turnON(2);
+  else if(x==0) turnON(0);
+  else if(x<5) {
+    digitalWrite(leds[0], HIGH);
+    delay(250);
+    digitalWrite(leds[0], LOW);
+    delay(250);
+  }
+  else if(20>x) turnON(1);
+
+}
+  
+void turnON(int z){
+  for(int i = 0; i < z; i++) digitalWrite(leds[i], HIGH);
+  for(int i = 0+z; i < 6; i++) digitalWrite(leds[i], LOW);
+}

@@ -1,0 +1,117 @@
+1) 1 Ultrasonic, 1 Servo: Servo turns 90 degrees when object is too close, and turns back when it is far enough
+2) 1 temperature, 1 DC-motor: motor has 4 speed modes depending on temperature: off (when cold), slow(warm), fast(hot), very fast(too hot)
+3) 1 stepper: stepper must turn N steps provided via serial port together with direction (E.g.: 200f – means 200 steps forward, 123b – means 123 steps backward)
+
+
+#1
+	
+
+#2
+const int temp = A2;
+const int motorPin = 3; 
+
+
+
+void setup() {
+  Serial.begin (9600);
+  pinMode(motorPin, OUTPUT);
+
+}
+
+
+void loop() {   
+  int value = analogRead(temp);
+
+  if(value<60) digitalWrite(motorPin, LOW);
+  else digitalWrite(motorPin, HIGH);
+
+
+  Serial.println(value);
+  
+}
+
+
+#3
+const int stepperPins[4] = {2, 3, 4, 5};
+int delayTime = 5;
+int steps;
+
+
+
+void setup() {
+  Serial.begin (9600);
+  for(int i=0; i<4; i++) pinMode(stepperPins[i], OUTPUT);
+
+  Serial.setTimeout(10);
+}
+String text;
+String direction1;
+String inter = "";
+
+
+void loop() { 
+  Serial.print("Enter your steps: ");
+  while(Serial.available()==0){ 
+  }
+  text = Serial.readString();
+  Serial.println(text);
+
+  for(int i = 0; i < text.length(); i++){
+    if(text[i]=='b') direction1 = "b";
+    else if(text[i]=='r') direction1 = "r";
+    else inter += text[i];
+  }
+  steps = inter.toInt();
+  Serial.println(steps);
+  Serial.println(direction1);
+  inter="";
+
+  if(direction1=="r"){
+    for(int i = 0; i < steps; i++){
+      digitalWrite(stepperPins[0], LOW);
+      digitalWrite(stepperPins[1], LOW);
+      digitalWrite(stepperPins[2], LOW);
+      digitalWrite(stepperPins[3], HIGH);
+      delay(delayTime);
+      digitalWrite(stepperPins[0], LOW);
+      digitalWrite(stepperPins[1], LOW);
+      digitalWrite(stepperPins[2], HIGH);
+      digitalWrite(stepperPins[3], LOW);
+      delay(delayTime);
+      digitalWrite(stepperPins[0], LOW);
+      digitalWrite(stepperPins[1], HIGH);
+      digitalWrite(stepperPins[2], LOW);
+      digitalWrite(stepperPins[3], LOW);
+      delay(delayTime);
+      digitalWrite(stepperPins[0], HIGH);
+      digitalWrite(stepperPins[1], LOW);
+      digitalWrite(stepperPins[2], LOW);
+      digitalWrite(stepperPins[3], LOW);
+      delay(delayTime);
+    }
+  }
+  else if(direction1=="b"){
+    for(int i = 0; i < steps; i++){
+      digitalWrite(stepperPins[0], HIGH);
+      digitalWrite(stepperPins[1], LOW);
+      digitalWrite(stepperPins[2], LOW);
+      digitalWrite(stepperPins[3], LOW);
+      delay(delayTime);
+      digitalWrite(stepperPins[0], LOW);
+      digitalWrite(stepperPins[1], HIGH);
+      digitalWrite(stepperPins[2], LOW);
+      digitalWrite(stepperPins[3], LOW);
+      delay(delayTime);
+      digitalWrite(stepperPins[0], LOW);
+      digitalWrite(stepperPins[1], LOW);
+      digitalWrite(stepperPins[2], HIGH);
+      digitalWrite(stepperPins[3], LOW);
+      delay(delayTime);
+      digitalWrite(stepperPins[0], LOW);
+      digitalWrite(stepperPins[1], LOW);
+      digitalWrite(stepperPins[2], LOW);
+      digitalWrite(stepperPins[3], HIGH);
+      delay(delayTime);
+    }
+  }
+}

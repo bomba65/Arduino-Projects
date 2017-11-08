@@ -1,0 +1,206 @@
+Concatenate two strings (Name, Surname) with space between them and output to serial monitor
+Find a number of spaces in a given text
+Given a string “Name Surname Age”, divide it to 3 strings
+Convert a String containing a number to a number
+Write function that compares 2 numbers and returns -1 if a<b, 0 if a=b, 1 if a>b
+Write function that returns minimum number from an array of integers
+Write function that sorts array of integers
+Read the number N from Serial port and make LED blink N times
+Read numbers N and M and return N to the power of M
+
+#1
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+}
+String name;
+String surname;
+
+void loop() {
+  Serial.print("Enter your name: ");
+  while(Serial.available()==0){ 
+  }
+  name = Serial.readString();
+  Serial.println(name);
+
+  Serial.print("Enter your surname: ");
+  while(Serial.available()==0){ 
+  }
+  surname = Serial.readString();
+  Serial.println(surname);
+
+  Serial.println("Hello "+ surname + " " + name);
+}
+
+#2
+String text;
+int count = 0;
+
+void loop() {
+  Serial.print("Enter your text: ");
+  while(Serial.available()==0){ 
+  }
+  text = Serial.readString();
+  Serial.println(text);
+  for(int i = 0; i < text.length(); i++){
+    if(text[i]==' ') {
+	text.remove(i--,1);
+	count++;
+	}
+  }
+  Serial.println(text);
+	Serial.println(count);
+}
+
+#3
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+  char str[] ="Name Surname Age";
+  char* split = strtok(str, " ");
+  while (split != NULL){
+    Serial.println(split);
+    split = strtok (NULL, " ");
+  }
+
+}
+
+void loop() {
+  
+}
+
+#4
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+}
+String integer = "15";
+void loop() {
+  Serial.println(integer.toInt() + 3);
+  delay(2000);
+}
+
+#5
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+}
+int a;
+int b;
+
+void loop() {
+  Serial.print("Enter int a: ");
+  while(Serial.available()==0){ 
+  }
+  a = Serial.parseInt();
+  Serial.println(a);
+
+  Serial.print("Enter int b: ");
+  while(Serial.available()==0){ 
+  }
+  b = Serial.parseInt();
+  Serial.println(b);
+
+  if(a<b)Serial.println(-1);
+  else if(a==b)Serial.println(0);
+  else Serial.println(1);
+}
+
+#6
+int array[] = {12,-2, 8, 6};
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+  Serial.println(minimum(array));
+}
+
+void loop() {
+}
+
+int minimum(int arr[]){
+  int min1 = arr[0];
+  for(int i = 1; i < sizeof(arr)/sizeof(arr[0]); i++){
+    if(arr[i]<min1) min1=arr[i];
+  }
+  return min1;
+}
+
+#7
+int ar[] = {12,-2, 8, 6};
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+  sort(ar);
+}
+
+void loop() {
+}
+
+void sort(int arr[]){
+  int temp = 0;
+  for(int i = 0; i < 3; i++){
+    for(int j = i+1; j < 4; j++){
+      if(arr[i]>arr[j]){
+        temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+      } 
+    }
+  }
+  for(int i = 0; i < 4; i++){
+    Serial.print(arr[i]);
+    Serial.println();
+  }
+  
+}
+
+#8
+int led = 12;
+void setup() {
+  Serial.begin (9600);
+  pinMode(led, OUTPUT);
+}
+int n;
+
+void loop() {
+  Serial.print("Enter int n: ");
+  while(Serial.available()==0){ 
+  }
+  n = Serial.parseInt();
+  Serial.println(n);
+
+  for(int i = 0; i < n; i++){
+    digitalWrite(led,HIGH);
+    delay(250);
+    digitalWrite(led,LOW);
+    delay(250);
+  }
+}
+
+#9
+void setup() {
+  Serial.begin (9600);
+  Serial.setTimeout(10);
+}
+int a;
+int b;
+
+void loop() {
+  Serial.print("Enter int a: ");
+  while(Serial.available()==0){ 
+  }
+  a = Serial.parseInt();
+  Serial.println(a);
+
+  Serial.print("Enter int b: ");
+  while(Serial.available()==0){ 
+  }
+  b = Serial.parseInt();
+  Serial.println(b);
+
+  Serial.println(pow(a,b));
+}
+
+
+
+

@@ -1,0 +1,52 @@
+int led = 8;
+int ldr = A3;
+const int secTilt = 3;
+const int windTilt = 4;
+const int piezo = A2; 
+const int temp = A1;
+boolean alarm = false;
+const int trigPin = 6;
+const int echoPin = 7 ;
+
+
+void setup() {
+  Serial.begin (9600);
+  pinMode(led, OUTPUT);
+  pinMode (secTilt, INPUT); 
+  digitalWrite (secTilt, HIGH); 
+  pinMode (windTilt, INPUT); 
+  digitalWrite (windTilt, HIGH); 
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+}
+
+int duration;
+int distanceCm;
+
+void loop() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distanceCm= duration*0.034/2;
+  
+  
+  if(analogRead(ldr)<500) digitalWrite(led, HIGH);
+  else digitalWrite(led, LOW);
+  if(!digitalRead(windTilt) && alarm == true) blinkLed();
+  if(analogRead(temp)>65) blinkLed();
+  if(distanceCm<20 ) blinkLed();
+  Serial.println(temp);
+}
+
+void blinkLed(){
+  tone(piezo, 1000);
+  digitalWrite(led, HIGH);
+  delay(100);
+  noTone(piezo);
+  digitalWrite(led, LOW);
+  delay(100);
+}
